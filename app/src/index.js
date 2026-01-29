@@ -104,9 +104,20 @@ async function initializeGS(config = {}) {
     // Create core modules
     _graph = new Graph(_eventBus);
 
+    // Initialize versioning and query engine
+    const _versioning = new Versioning(_graph, _eventBus);
+    const _queryEngine = new QueryEngine(_graph);
+
     // Initialize GS object
     GS.graph = _graph;
     GS.events = _eventBus;
+    GS.versioning = _versioning;
+    GS.query = _queryEngine;
+
+    // Backwards-compatible aliases (window.GS API may use switchVersion)
+    if (GS.versioning && !GS.versioning.switchVersion && GS.versioning.switchToVersion) {
+      GS.versioning.switchVersion = GS.versioning.switchToVersion.bind(GS.versioning);
+    }
 
     // TODO: Initialize other modules (adapters, services, storage)
     // TODO: Load configuration (adapters, storage, renderers)

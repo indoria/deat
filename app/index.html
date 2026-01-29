@@ -282,6 +282,37 @@ addEntity then addRelation
         </div>
 
         <div class="command-section">
+          <h3>Versioning</h3>
+          <div class="command" onclick="executeCommand(`GS.versioning.createVersion({ author: 'ui', message: 'UI snapshot' })`)">
+            Create Version (quick)
+          </div>
+          <div class="command multiline" onclick="executeCommand(`// Create version with custom message\nGS.versioning.createVersion({ author: 'ui', message: 'after analysis' })`)">
+            Create Version (with message)
+          </div>
+          <div class="command" onclick="executeCommand('GS.versioning.getVersions()')">
+            List Versions
+          </div>
+          <div class="command multiline" onclick="executeCommand(`// Switch to first available version (if any)\nconst vs = GS.versioning.getVersions();\nif(vs && vs.length) GS.versioning.switchVersion(vs[0].id); else console.log('No versions available')`)">
+            Switch To First Version
+          </div>
+          <div class="command" onclick="executeCommand(`GS.versioning.createBranch('feature-'+Date.now(), GS.versioning.getCurrentVersion() ? GS.versioning.getCurrentVersion().id : null)`)">
+            Create Branch from Current
+          </div>
+          <div class="command" onclick="executeCommand('GS.versioning.getBranches()')">
+            List Branches
+          </div>
+          <div class="command multiline" onclick="executeCommand(`const bs = GS.versioning.getBranches(); if(bs && bs.length) GS.versioning.switchBranch(bs[0].id); else console.log('No branches available')`)">
+            Switch To First Branch
+          </div>
+          <div class="command" onclick="executeCommand('GS.versioning.isDirty()')">
+            Is Dirty?
+          </div>
+          <div class="command multiline" onclick="executeCommand('JSON.stringify(GS.versioning.getVersions(), null, 2)')">
+            Serialize Versions (JSON)
+          </div>
+        </div>
+
+        <div class="command-section">
           <h3>Development</h3>
           <div class="command" onclick="clearConsole()">
             Clear Console
