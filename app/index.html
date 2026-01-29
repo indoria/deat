@@ -311,6 +311,18 @@ addEntity then addRelation
             Serialize Versions (JSON)
           </div>
         </div>
+        <div class="command-section">
+          <h3>Versioning — Switch by ID</h3>
+          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;">
+            <input id="version-id-input" placeholder="Enter version ID" style="flex:1;padding:8px;border:1px solid #e0e0e0;border-radius:6px;font-family:inherit;font-size:12px;" />
+            <button class="command" style="padding:8px 12px;" onclick="switchToVersionByIdInput()">Switch Version</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;">
+            <input id="branch-id-input" placeholder="Enter branch ID" style="flex:1;padding:8px;border:1px solid #e0e0e0;border-radius:6px;font-family:inherit;font-size:12px;" />
+            <button class="command" style="padding:8px 12px;" onclick="switchToBranchByIdInput()">Switch Branch</button>
+          </div>
+          <div class="command" onclick="executeCommand('GS.versioning.getCurrentVersion()')">Show Current Version</div>
+        </div>
 
         <div class="command-section">
           <h3>Development</h3>
@@ -427,6 +439,58 @@ addEntity then addRelation
       const sidebar = document.querySelector('.sidebar');
       sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
     };
+
+    // Safe UI wrappers for Versioning
+    window.switchToVersionById = function (versionId) {
+      if (!window.GS || !GS.versioning) {
+        logToConsole('GS.versioning is not initialized', 'error');
+        return;
+      }
+      try {
+        GS.versioning.switchToVersion(versionId);
+        logToConsole(`Switched to version ${versionId}`, 'success');
+      } catch (err) {
+        logToConsole(`Failed to switch to version ${versionId}: ${err.message}`, 'error');
+      }
+    };
+
+    window.switchToBranchById = function (branchId) {
+      if (!window.GS || !GS.versioning) {
+        logToConsole('GS.versioning is not initialized', 'error');
+        return;
+      }
+      try {
+        GS.versioning.switchBranch(branchId);
+        logToConsole(`Switched to branch ${branchId}`, 'success');
+      } catch (err) {
+        logToConsole(`Failed to switch to branch ${branchId}: ${err.message}`, 'error');
+      }
+    };
+
+    function switchToVersionByIdInput() {
+      const input = document.getElementById('version-id-input');
+      const id = input && input.value && input.value.trim();
+      if (!id) { logToConsole('Please enter a version ID', 'warn'); return; }
+      window.switchToVersionById(id);
+    }
+
+    function switchToBranchByIdInput() {
+      const input = document.getElementById('branch-id-input');
+      const id = input && input.value && input.value.trim();
+      if (!id) { logToConsole('Please enter a branch ID', 'warn'); return; }
+      window.switchToBranchById(id);
+    }
+
+    // Audit GS modules and warn if commonly used modules are uninitialized
+    function auditGSModules() {
+      const required = ['graph','events','versioning','query','annotation','cassette','storage','sync','adapters','replay','ui','utils'];
+      const missing = required.filter(k => !GS[k]);
+      if (missing.length) {
+        logToConsole(`Warning: GS modules not initialized: ${missing.join(', ')}`, 'warn');
+      } else {
+        logToConsole('All core GS modules appear initialized', 'info');
+      }
+    }
   </script>
 </body>
 </html>
