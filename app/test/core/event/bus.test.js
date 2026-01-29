@@ -5,6 +5,7 @@
  * See: ../../doc/modules/event/Bus.md
  */
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { EventBus } from '../../../src/core/event/bus.js';
 
 describe('EventBus', () => {

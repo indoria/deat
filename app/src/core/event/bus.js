@@ -155,7 +155,7 @@ export class EventBus {
    * E.g., 'graph.*' matches 'graph.entity.added'
    */
   _matchesWildcard(pattern, eventType) {
-    if (pattern === eventType) return true;
+    // Only check wildcards (exact matches are handled separately in emit())
     if (!pattern.includes('*')) return false;
 
     const regex = new RegExp(

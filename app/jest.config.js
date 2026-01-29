@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
   testMatch: ['**/*.test.js'],
@@ -15,7 +15,11 @@ module.exports = {
       statements: 75
     }
   },
-  setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
   verbose: true,
-  testTimeout: 10000
+  testTimeout: 10000,
+  transform: {},
+  // ESM support for Jest 29+
+  testEnvironment: 'node',
+  transformIgnorePatterns: [],
+  moduleNameMapper: {}
 };

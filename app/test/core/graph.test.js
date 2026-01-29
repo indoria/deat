@@ -5,8 +5,9 @@
  * See: ../../doc/arch/core.md
  */
 
-import { Graph } from '../../../src/core/graph.js';
-import { EventBus } from '../../../src/core/event/bus.js';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { Graph } from '../../src/core/graph.js';
+import { EventBus } from '../../src/core/event/bus.js';
 
 describe('Graph', () => {
   let graph;
