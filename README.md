@@ -2,7 +2,9 @@
 
 GraphSense is a generic, schema-first, offline-capable platform designed to map complex external data into a recursive graph model. It allows users to annotate, version, and visualize data through multiple interchangeable UX modes. The system is "headless-first," meaning the entire logic can be controlled via the browser console before a UI is even attached.
 
-For a complete overview of the project's vision, requirements, and architecture, please see the **Project Documentation**.
+For a complete overview of the project's vision, requirements, and architecture, please see the **[Project Documentation](./doc/README.md)**.
+
+**⚠️ Before implementing anything, read [CONTRIBUTING.md](./CONTRIBUTING.md) first.** It outlines all required documentation you must read before coding, in the right order.
 
 ---
 

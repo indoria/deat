@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GS - Universal Entity Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+
+    .status {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status.ready {
+      background: rgba(76, 175, 80, 0.3);
+      color: white;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 35%;
+      border-right: 1px solid #e0e0e0;
+      padding: 30px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .command-section {
+      margin-bottom: 30px;
+    }
+
+    .command-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .command {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #667eea;
+      word-break: break-all;
+    }
+
+    .command:hover {
+      background: #f5f5f5;
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    }
+
+    .command.multiline {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .console-area {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .console-area h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .console {
+      flex: 1;
+      background: #1e1e1e;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #d4d4d4;
+      line-height: 1.6;
+    }
+
+    .console-output {
+      margin-bottom: 8px;
+    }
+
+    .console-output.log {
+      color: #d4d4d4;
+    }
+
+    .console-output.success {
+      color: #4ec9b0;
+    }
+
+    .console-output.error {
+      color: #f48771;
+    }
+
+    .console-output.info {
+      color: #9cdcfe;
+    }
+
+    .console-output.warn {
+      color: #ce9178;
+    }
+
+    .console-input {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .console-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .console-input button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .console-input button:hover {
+      background: #764ba2;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        max-height: 40%;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌐 Universal Entity Explorer</h1>
+      <p>Headless-first, schema-driven platform for exploring and annotating structured data</p>
+      <span class="status ready" id="status">● Loading...</span>
+    </div>
+
+    <div class="main">
+      <div class="sidebar">
+        <h2>Quick Commands</h2>
+
+        <div class="command-section">
+          <h3>System</h3>
+          <div class="command" onclick="executeCommand('GS.core.status()')">
+            GS.core.status()
+          </div>
+          <div class="command" onclick="executeCommand('GS.graph.serialize()')">
+            GS.graph.serialize()
+          </div>
+          <div class="command" onclick="executeCommand('GS.events.getHistory()')">
+            GS.events.getHistory()
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Entities</h3>
+          <div class="command multiline" onclick="executeCommand(`GS.graph.addEntity({
+  id: 'repo-1',
+  type: 'repository',
+  metadata: { title: 'My First Repo' }
+})`)">
+Add Entity:
+GS.graph.addEntity({
+  id: 'repo-1',
+  type: 'repository',
+  metadata: { title: 'My First Repo' }
+})
+          </div>
+          <div class="command" onclick="executeCommand(`GS.graph.updateEntity('repo-1', { metadata: { title: 'Updated Repo' } })`)">
+            Update Entity
+          </div>
+          <div class="command" onclick="executeCommand(`GS.graph.getEntity('repo-1')`)">
+            Get Entity
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Relations</h3>
+          <div class="command multiline" onclick="executeCommand(`GS.graph.addEntity({ id: 'user-1', type: 'user', metadata: { title: 'Alice' } });
+GS.graph.addRelation({
+  id: 'rel-1',
+  from: 'user-1',
+  to: 'repo-1',
+  type: 'OWNS'
+})`)">
+Create Relation:
+addEntity then addRelation
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Development</h3>
+          <div class="command" onclick="clearConsole()">
+            Clear Console
+          </div>
+          <div class="command" onclick="toggleSidebar()">
+            Toggle Sidebar
+          </div>
+        </div>
+      </div>
+
+      <div class="console-area">
+        <h2>Console</h2>
+        <div class="console" id="console"></div>
+        <div class="console-input">
+          <input
+            type="text"
+            id="command-input"
+            placeholder="Type a command or paste JavaScript..."
+            onkeypress="if(event.key === 'Enter') executeCommandInput()"
+          />
+          <button onclick="executeCommandInput()">Execute</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import GS from './src/index.js';
+
+    // Global GS reference
+    window.GS = GS;
+
+    // Console output
+    const consoleEl = document.getElementById('console');
+    const statusEl = document.getElementById('status');
+
+    // Intercept console methods
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    const originalInfo = console.info;
+
+    function logToConsole(message, type = 'log') {
+      const div = document.createElement('div');
+      div.className = `console-output ${type}`;
+      div.textContent = String(message);
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    console.log = function (...args) {
+      originalLog(...args);
+      logToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'log');
+    };
+
+    console.error = function (...args) {
+      originalError(...args);
+      logToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'error');
+    };
+
+    console.warn = function (...args) {
+      originalWarn(...args);
+      logToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'warn');
+    };
+
+    console.info = function (...args) {
+      originalInfo(...args);
+      logToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'info');
+    };
+
+    // Initialize GS
+    try {
+      await GS.bootstrap({ mode: 'headless' });
+      logToConsole('✅ GS initialized in headless mode', 'success');
+      logToConsole('📖 Ready to use. Try clicking commands on the left or type in the input below.', 'info');
+      statusEl.textContent = '● Ready';
+      statusEl.style.background = 'rgba(76, 175, 80, 0.3)';
+    } catch (error) {
+      logToConsole(`❌ Initialization failed: ${error.message}`, 'error');
+      statusEl.textContent = '● Error';
+      statusEl.style.background = 'rgba(244, 135, 113, 0.3)';
+    }
+
+    // Global functions
+    window.executeCommand = function (command) {
+      logToConsole(`> ${command}`, 'info');
+      try {
+        const result = eval(command);
+        if (result !== undefined) {
+          logToConsole(JSON.stringify(result, null, 2), 'success');
+        }
+      } catch (error) {
+        logToConsole(`Error: ${error.message}`, 'error');
+      }
+    };
+
+    window.executeCommandInput = function () {
+      const input = document.getElementById('command-input');
+      const command = input.value.trim();
+      if (command) {
+        window.executeCommand(command);
+        input.value = '';
+      }
+    };
+
+    window.clearConsole = function () {
+      consoleEl.innerHTML = '';
+      logToConsole('Console cleared', 'info');
+    };
+
+    window.toggleSidebar = function () {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+    };
+  </script>
+</body>
+</html>

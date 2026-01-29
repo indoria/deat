@@ -1,0 +1,54 @@
+#!/bin/bash
+# .git/hooks/pre-commit
+# Enforces documentation review before committing code changes
+
+echo "🔍 Pre-commit checks..."
+
+# Check if any src/ files are being committed
+STAGED_SRC_FILES=$(git diff --cached --name-only -- 'src/*' | wc -l)
+
+if [ "$STAGED_SRC_FILES" -gt 0 ]; then
+  echo "📚 Source code changes detected."
+  echo "   Have you read the relevant docs?"
+  echo ""
+  echo "   Required reading:"
+  echo "   1. doc/README.md"
+  echo "   2. doc/Vision.md"
+  echo "   3. doc/arch/[your-layer].md"
+  echo "   4. Relevant module contract docs"
+  echo "   5. doc/TESTING.md"
+  echo ""
+  echo "   See CONTRIBUTING.md for full checklist."
+  echo ""
+  
+  # Optional: Ask for confirmation (uncomment to enforce)
+  # read -p "Continue commit? (y/n) " -n 1 -r
+  # echo
+  # if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  #   echo "❌ Commit aborted. Please review docs."
+  #   exit 1
+  # fi
+fi
+
+# Check for linting errors on staged files
+STAGED_JS_FILES=$(git diff --cached --name-only -- '*.js')
+if [ -n "$STAGED_JS_FILES" ]; then
+  echo "🔧 Checking code style..."
+  npm run lint --silent -- $STAGED_JS_FILES
+  if [ $? -ne 0 ]; then
+    echo "❌ Linting errors found. Fix with: npm run format"
+    exit 1
+  fi
+fi
+
+# Check for TODO/FIXME without docs reference
+TODOS=$(git diff --cached -- 'src/*' | grep -E '(TODO|FIXME)' | grep -v 'See: doc/')
+if [ -n "$TODOS" ]; then
+  echo "⚠️  Warning: Found TODO/FIXME without doc reference"
+  echo "$TODOS"
+  echo ""
+  echo "   Format: // TODO: something (See: doc/path/to/relevant/doc.md)"
+fi
+
+echo "✅ Pre-commit checks passed!"
+exit 0

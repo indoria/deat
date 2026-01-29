@@ -1,0 +1,154 @@
+# Documentation Sync Manifest
+# This file ensures every development task is tied to documentation.
+# Used for: validation, CI checks, and AI developer prompting.
+
+---
+
+## Core Documentation Map
+
+### Architecture & Vision
+- doc/Vision.md → MUST read before any feature work
+- doc/arch/arch.md → MUST read before implementing ANY module
+- doc/ADR.md → Reference for design decisions
+
+### Per-Layer Documentation
+
+#### Core (Headless)
+- Location: src/core/
+- Must Read: doc/arch/core.md + doc/modules/event/Bus.md
+- Test Pattern: test/core/
+- Event Spec: doc/modules/event/Schemas.md
+- Schema Spec: doc/modules/graph/schema.md
+
+#### Data Adapters
+- Location: src/adapters/data/
+- Must Read: doc/arch/data.md + doc/modules/adapter/GitHub/Schema.md
+- Test Pattern: test/adapters/data/
+- Error Handling: doc/errorHandling/errorFramework.md
+
+#### Storage Adapters
+- Location: src/adapters/storage/
+- Must Read: doc/arch/data.md
+- Test Pattern: test/adapters/storage/
+- Contract: [doc needs creation]
+
+#### Services
+- Location: src/services/
+- Must Read: doc/arch/services.md
+- Modules:
+  - AnnotationService → [doc needs creation]
+  - CassettePlayer → [doc needs creation]
+  - SyncManager → [doc needs creation]
+
+#### UI & Renderers
+- Location: src/ui/
+- Must Read: doc/arch/ui.md + doc/WEB_COMPONENTS.md
+- Contract: doc/modules/ui/RendererContract.md
+- Examples: examples/with-renderer.html
+- Test Pattern: test/ui/ + doc/TESTING.md
+
+### Technical Contracts
+- window.GS API: doc/window.GS.md
+- Event Bus: doc/modules/event/Bus.md
+- Event Schemas: doc/modules/event/Schemas.md
+- Graph Schema: doc/modules/graph/schema.md
+- Renderer Contract: doc/modules/ui/RendererContract.md
+- Error Framework: doc/errorHandling/errorFramework.md
+- Bootstrap Config: doc/notes/bootstrapping.md
+
+### Development
+- Setup: doc/DEVELOPMENT.md
+- Tech Stack: doc/TECH_STACK.md
+- Testing: doc/TESTING.md
+- Web Components: doc/WEB_COMPONENTS.md
+- Contributing: CONTRIBUTING.md
+
+---
+
+## Critical Constraints (Check These First)
+
+### 1. Headless-First
+❌ NO DOM in: src/core/
+✅ YES DOM in: src/ui/
+See: doc/arch/core.md
+
+### 2. Event-Driven
+Every mutation MUST emit event
+See: doc/modules/event/Bus.md
+
+### 3. Schema-First
+Validate before mutation
+See: doc/modules/graph/schema.md
+
+### 4. No Build System
+Vanilla JS, ES6 modules
+See: doc/TECH_STACK.md
+
+### 5. Test Coverage
+Minimum 70% per module
+See: doc/TESTING.md
+
+---
+
+## Documentation Gaps (To Be Filled)
+
+- [ ] Storage Adapter Contract (beyond data.md)
+- [ ] AnnotationService detailed API
+- [ ] CassettePlayer detailed API
+- [ ] SyncManager detailed implementation guide
+- [ ] QueryEngine full API spec (referenced but may be incomplete)
+- [ ] Versioning module detailed contract
+- [ ] DiffEngine detailed contract
+- [ ] UndoRedo manager contract
+- [ ] SchemaBuilder runtime API
+- [ ] Recovery strategies for storage failures
+- [ ] Multi-user collaboration strategy (v1.1+)
+
+---
+
+## AI Developer Instructions
+
+When assigned a task:
+
+1. **Read this file first** to find relevant docs
+2. **Read docs in order:**
+   - Start with Vision + Architecture
+   - Then module-specific contract
+   - Then testing patterns
+3. **Link code to docs** with comments
+4. **Emit events** according to spec
+5. **Write tests first** per TESTING.md
+6. **Submit PR with checklist** from CONTRIBUTING.md
+
+If a task conflicts with docs → **Ask instead of guessing**
+
+Example:
+- ❌ "Add API endpoint that mutates graph"
+- ✅ "Add API endpoint that calls graph.addEntity()"
+  (because endpoint must emit event per doc/modules/event/Bus.md)
+
+---
+
+## Validation Rules
+
+### Merge Checklist
+- [ ] Author confirmed docs read (CONTRIBUTING.md checklist)
+- [ ] Code comments reference doc sections
+- [ ] Tests pass per TESTING.md
+- [ ] Events emitted match doc/modules/event/Schemas.md
+- [ ] No DOM in core modules (doc/arch/core.md)
+- [ ] Coverage ≥ 70% (doc/TESTING.md)
+
+---
+
+## Documentation Review Cadence
+
+- Weekly: Check for gaps in doc/modules/
+- After each major feature: Update relevant docs
+- On API changes: Update window.GS.md + event schemas
+- On design changes: Add ADR to doc/ADR.md
+
+---
+
+Last Updated: 2026-01-29
+Maintained By: [Project Team]

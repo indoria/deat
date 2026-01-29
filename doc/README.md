@@ -54,3 +54,14 @@ This section contains practical guides and deep dives into specific implementati
 *   **`notes/bootstrapping.md`**: Details the application's startup sequence, configuration object, and runtime switching capabilities for modules like storage and renderers.
 
 ---
+
+## 5. Development Setup & Stack
+
+These documents guide developers setting up their environment and understanding technology choices.
+
+*   **`TECH_STACK.md`**: Complete overview of the technology stack, including vanilla JS, HTML5 Web Components, Jest testing, and rationale for avoiding build systems.
+*   **`DEVELOPMENT.md`**: Step-by-step setup instructions, project structure, npm scripts, and development workflows (headless-first approach).
+*   **`WEB_COMPONENTS.md`**: Deep dive into HTML5 Web Components for implementing Renderers, Shadow DOM, Slots, Templates, and styling strategies.
+*   **`TESTING.md`**: Comprehensive Jest testing strategy, patterns for core logic, adapters, and Web Components, with code examples and coverage targets.
+
+---

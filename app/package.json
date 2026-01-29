@@ -1,0 +1,33 @@
+{
+  "name": "universal-entity-explorer",
+  "version": "0.1.0",
+  "description": "Generic, schema-first, offline-capable platform for exploring and annotating structured data.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "dev": "node scripts/dev-server.js",
+    "lint": "eslint src/ test/ --fix",
+    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\""
+  },
+  "keywords": [
+    "graph",
+    "entity-explorer",
+    "offline-first",
+    "schema-driven",
+    "web-components"
+  ],
+  "author": "bhagwati-prasad",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@testing-library/dom": "^9.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
