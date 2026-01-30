@@ -8,6 +8,9 @@
  * See: ../../doc/arch/core.md → "Versioning"
  */
 
+import { Entity } from './entity.js';
+import { Relation } from './relation.js';
+
 // Cross-environment UUID generator. Prefers Web Crypto `randomUUID` or
 // `getRandomValues`. Falls back to a Math.random-based UUIDv4 when needed.
 function generateUUID() {
@@ -317,13 +320,13 @@ export class Versioning {
    * @returns {Object}
    */
   _captureSnapshot() {
-    const entities = Array.from(this.graph.entities.values()).map((entity) => ({
-      ...entity,
-    }));
+    const entities = Array.from(this.graph.entities.values()).map((entity) =>
+      entity.serialize()
+    );
 
-    const relations = Array.from(this.graph.relations.values()).map((relation) => ({
-      ...relation,
-    }));
+    const relations = Array.from(this.graph.relations.values()).map((relation) =>
+      relation.serialize()
+    );
 
     return Object.freeze({
       entities: Object.freeze(entities),
@@ -342,16 +345,16 @@ export class Versioning {
     this.graph.entities.clear();
     this.graph.relations.clear();
 
-    // Restore entities
+    // Restore entities as Entity instances
     for (const entity of snapshot.entities) {
-      this.graph.entities.set(entity.id, { ...entity });
+      const instance = new Entity(entity);
+      this.graph.entities.set(instance.id, instance);
     }
 
-    // Restore relations
+    // Restore relations as Relation instances
     for (const relation of snapshot.relations) {
-      this.graph.relations.set(relation.id || `${relation.from}-${relation.to}`, {
-        ...relation,
-      });
+      const instance = new Relation(relation);
+      this.graph.relations.set(instance.id, instance);
     }
   }
 }

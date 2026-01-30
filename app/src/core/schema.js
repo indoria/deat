@@ -8,6 +8,9 @@
  * See: ../../doc/errorHandling/errorFramework.md
  */
 
+import { Entity } from './entity.js';
+import { Relation } from './relation.js';
+
 export class Schema {
   /**
    * @param {Object} options - Configuration options
@@ -198,31 +201,36 @@ export class Schema {
    * Validate entity value
    *
    * @private
-   * @param {Object} entity - Entity to validate
+   * @param {Object|Entity} entity - Entity instance or plain object to validate
    * @returns {boolean}
    */
   _validateEntity(entity) {
-    if (!entity.type) {
+    // Handle Entity instances
+    const entityData = entity && typeof entity.serialize === 'function' 
+      ? entity.serialize() 
+      : entity;
+
+    if (!entityData.type) {
       this._lastError = 'Entity must have a "type" field';
       return false;
     }
 
-    const typeDef = this.getEntityType(entity.type);
+    const typeDef = this.getEntityType(entityData.type);
     if (!typeDef) {
-      this._lastError = `Entity type '${entity.type}' is not registered`;
+      this._lastError = `Entity type '${entityData.type}' is not registered`;
       return false;
     }
 
     // Check required fields
     for (const field of typeDef.required) {
-      if (!(field in entity)) {
-        this._lastError = `Entity type '${entity.type}' requires field '${field}'`;
+      if (!(field in entityData)) {
+        this._lastError = `Entity type '${entityData.type}' requires field '${field}'`;
         return false;
       }
     }
 
     // Validate field constraints
-    for (const [field, value] of Object.entries(entity)) {
+    for (const [field, value] of Object.entries(entityData)) {
       if (field === 'type' || field === 'metadata') continue; // Skip type and metadata
 
       const constraint = typeDef.constraints[field];
@@ -240,27 +248,32 @@ export class Schema {
    * Validate relation value
    *
    * @private
-   * @param {Object} relation - Relation to validate
+   * @param {Object|Relation} relation - Relation instance or plain object to validate
    * @returns {boolean}
    */
   _validateRelation(relation) {
+    // Handle Relation instances
+    const relationData = relation && typeof relation.serialize === 'function'
+      ? relation.serialize()
+      : relation;
+
     // Check required relation fields
     const requiredFields = ['id', 'from', 'to', 'type'];
     for (const field of requiredFields) {
-      if (!(field in relation)) {
+      if (!(field in relationData)) {
         this._lastError = `Relation requires field '${field}'`;
         return false;
       }
     }
 
-    const typeDef = this.getRelationType(relation.type);
+    const typeDef = this.getRelationType(relationData.type);
     if (!typeDef) {
-      this._lastError = `Relation type '${relation.type}' is not registered`;
+      this._lastError = `Relation type '${relationData.type}' is not registered`;
       return false;
     }
 
     // Validate constraints
-    for (const [field, value] of Object.entries(relation)) {
+    for (const [field, value] of Object.entries(relationData)) {
       if (field === 'type' || field === 'metadata') continue;
 
       const constraint = typeDef.properties && typeDef.properties[field];

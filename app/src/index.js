@@ -104,15 +104,17 @@ async function initializeGS(config = {}) {
     // Create core modules
     _graph = new Graph(_eventBus);
 
-    // Initialize versioning and query engine
+    // Initialize versioning, query engine, and diff engine
     const _versioning = new Versioning(_graph, _eventBus);
     const _queryEngine = new QueryEngine(_graph);
+    const _diffEngine = new DiffEngine();
 
     // Initialize GS object
     GS.graph = _graph;
     GS.events = _eventBus;
     GS.versioning = _versioning;
     GS.query = _queryEngine;
+    GS.diff = _diffEngine;
 
     // Backwards-compatible aliases (window.GS API may use switchVersion)
     if (GS.versioning && !GS.versioning.switchVersion && GS.versioning.switchToVersion) {

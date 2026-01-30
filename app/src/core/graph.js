@@ -9,6 +9,9 @@
  * See: ../../doc/modules/event/Bus.md for events
  */
 
+import { Entity } from './entity.js';
+import { Relation } from './relation.js';
+
 export class Graph {
   /**
    * @param {EventBus} eventBus - Event bus for emitting mutations
@@ -31,7 +34,7 @@ export class Graph {
   /**
    * Add an entity to the graph
    *
-   * @param {Object} entity - Entity to add
+   * @param {Object} entity - Entity data to add
    * @throws {Error} If entity is invalid
    */
   addEntity(entity) {
@@ -45,13 +48,16 @@ export class Graph {
       throw new Error(`Entity with ID '${entity.id}' already exists`);
     }
 
-    // Add to graph
-    this.entities.set(entity.id, entity);
+    // Create Entity instance
+    const entityInstance = new Entity(entity);
 
-    // Emit event
+    // Add to graph
+    this.entities.set(entityInstance.id, entityInstance);
+
+    // Emit event with serialized entity
     this.eventBus.emit(
       'graph.entity.added',
-      { entity },
+      { entity: entityInstance.serialize() },
       { source: 'Graph' }
     );
   }
@@ -69,16 +75,22 @@ export class Graph {
       throw new Error(`Entity '${entityId}' not found`);
     }
 
-    const before = JSON.parse(JSON.stringify(entity));
-    const after = { ...entity, ...patch };
+    const before = entity.serialize();
+    
+    // Update entity instance with patch
+    const serialized = entity.serialize();
+    const updated = { ...serialized, ...patch };
+    const newEntity = new Entity(updated);
 
     // Validate if schema is present
-    if (this.schema && !this.schema.validate(after, 'entity')) {
+    if (this.schema && !this.schema.validate(updated, 'entity')) {
       throw new Error(`Invalid entity: ${this.schema.lastError}`);
     }
 
     // Update in graph
-    this.entities.set(entityId, after);
+    this.entities.set(entityId, newEntity);
+
+    const after = newEntity.serialize();
 
     // Emit event
     this.eventBus.emit(
@@ -116,16 +128,17 @@ export class Graph {
    * Get an entity by ID
    *
    * @param {string} entityId - Entity ID
-   * @returns {Object|null} Entity or null if not found
+   * @returns {Object|null} Serialized entity or null if not found
    */
   getEntity(entityId) {
-    return this.entities.get(entityId) || null;
+    const entity = this.entities.get(entityId);
+    return entity ? entity.serialize() : null;
   }
 
   /**
    * Add a relation to the graph
    *
-   * @param {Object} relation - Relation to add
+   * @param {Object} relation - Relation data to add
    * @throws {Error} If relation is invalid
    */
   addRelation(relation) {
@@ -147,13 +160,16 @@ export class Graph {
       throw new Error(`Relation with ID '${relation.id}' already exists`);
     }
 
-    // Add to graph
-    this.relations.set(relation.id, relation);
+    // Create Relation instance
+    const relationInstance = new Relation(relation);
 
-    // Emit event
+    // Add to graph
+    this.relations.set(relationInstance.id, relationInstance);
+
+    // Emit event with serialized relation
     this.eventBus.emit(
       'graph.relation.added',
-      { relation },
+      { relation: relationInstance.serialize() },
       { source: 'Graph' }
     );
   }
@@ -162,10 +178,11 @@ export class Graph {
    * Get a relation by ID
    *
    * @param {string} relationId - Relation ID
-   * @returns {Object|null} Relation or null if not found
+   * @returns {Object|null} Serialized relation or null if not found
    */
   getRelation(relationId) {
-    return this.relations.get(relationId) || null;
+    const relation = this.relations.get(relationId);
+    return relation ? relation.serialize() : null;
   }
 
   /**
@@ -175,8 +192,8 @@ export class Graph {
    */
   serialize() {
     return {
-      entities: Array.from(this.entities.values()),
-      relations: Array.from(this.relations.values()),
+      entities: Array.from(this.entities.values()).map(e => e.serialize()),
+      relations: Array.from(this.relations.values()).map(r => r.serialize()),
     };
   }
 
@@ -189,17 +206,19 @@ export class Graph {
     this.entities.clear();
     this.relations.clear();
 
-    // Load entities
+    // Load entities as Entity instances
     if (Array.isArray(data.entities)) {
       data.entities.forEach((entity) => {
-        this.entities.set(entity.id, entity);
+        const instance = new Entity(entity);
+        this.entities.set(instance.id, instance);
       });
     }
 
-    // Load relations
+    // Load relations as Relation instances
     if (Array.isArray(data.relations)) {
       data.relations.forEach((relation) => {
-        this.relations.set(relation.id, relation);
+        const instance = new Relation(relation);
+        this.relations.set(instance.id, instance);
       });
     }
 
