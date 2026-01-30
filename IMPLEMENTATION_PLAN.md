@@ -22,12 +22,12 @@ Phase 2: Graph Operations
 ├── QueryEngine ✅ (Done)
 ├── Versioning & Snapshots ✅ (Done)
 ├── DiffEngine ✅ (Done)
-└── UndoRedo Manager
+└── UndoRedo Manager ✅ (Done)
 
 Phase 3: Services Layer
-├── AnnotationService
-├── CassettePlayer
-└── HighlightController
+├── AnnotationService ✅ (Done)
+├── CassettePlayer ✅ (Done)
+└── HighlightController ✅ (Done)
 
 Phase 4: Data Adapters
 ├── Storage Adapters (LocalStorage, IndexedDB)
