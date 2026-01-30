@@ -152,7 +152,7 @@ async function initializeGS(config = {}) {
     _versioning = new Versioning(_graph, _eventBus);
     const _queryEngine = new QueryEngine(_graph);
     const _diffEngine = new DiffEngine();
-    _undoRedo = new UndoRedoManager(_eventBus);
+    _undoRedo = new UndoRedoManager(_graph);
 
     // Phase 3: Initialize services (after eventBus exists)
     _annotationService = new AnnotationService(_graph, { bus: _eventBus });
