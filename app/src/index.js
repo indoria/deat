@@ -15,8 +15,8 @@ import { QueryEngine } from './core/query-engine.js';
 import { DiffEngine } from './core/diff-engine.js';
 
 // Adapter imports
-import { StorageManager } from './adapters/storage/storage-manager.js';
-import { DataAdapterManager } from './adapters/data/data-adapter-manager.js';
+import StorageManager from './adapters/storage/storage-manager.js';
+import DataAdapterManager from './adapters/data/data-adapter-manager.js';
 
 // Service imports
 import { AnnotationService } from './services/annotation-service.js';
@@ -115,6 +115,15 @@ async function initializeGS(config = {}) {
     GS.versioning = _versioning;
     GS.query = _queryEngine;
     GS.diff = _diffEngine;
+
+    // Initialize annotation service so UI commands like `GS.annotation.addNote()` work
+    try {
+      const _annotation = new AnnotationService(_graph, { bus: _eventBus });
+      GS.annotation = _annotation;
+    } catch (err) {
+      console.warn('Failed to initialize AnnotationService:', err);
+      GS.annotation = null;
+    }
 
     // Backwards-compatible aliases (window.GS API may use switchVersion)
     if (GS.versioning && !GS.versioning.switchVersion && GS.versioning.switchToVersion) {

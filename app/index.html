@@ -50,6 +50,12 @@
       margin-bottom: 15px;
     }
 
+    .status-and-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .status {
       display: inline-block;
       background: rgba(255, 255, 255, 0.2);
@@ -225,7 +231,12 @@
     <div class="header">
       <h1>🌐 Universal Entity Explorer</h1>
       <p>Headless-first, schema-driven platform for exploring and annotating structured data</p>
-      <span class="status ready" id="status">● Loading...</span>
+      <div class="status-and-actions">
+        <span class="status ready" id="status">● Loading...</span>
+        <span onclick="toggleSidebar()">
+          Toggle Sidebar
+        </span>
+      </div>
     </div>
 
     <div class="main">
@@ -323,14 +334,87 @@ addEntity then addRelation
           </div>
           <div class="command" onclick="executeCommand('GS.versioning.getCurrentVersion()')">Show Current Version</div>
         </div>
+        <!-- Phase 1-3 Additional Controls -->
+        <div class="command-section">
+          <h3>Query Engine</h3>
+          <div class="command multiline" onclick="executeCommand(`GS.query.from('repository').where({ 'metadata.title': { contains: 'Repo' } }).execute()`)">
+            Query: repositories by title
+          </div>
+          <div class="command" onclick="executeCommand(`GS.query.from('user').count()`)">
+            Count Users
+          </div>
+          <div class="command multiline" onclick="executeCommand(`GS.query.from('user').traverse('OWNS', 'out').execute()`)">
+            Traverse Relations (OWNS)
+          </div>
+          <div class="command multiline" onclick="executeCommand(`GS.query.from('user').path({ to: (e) => e.id === 'repo-1', maxDepth: 4 }).execute()`)">
+            Find Path (user → repo-1)
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Diff & Undo</h3>
+          <div class="command" onclick="executeCommand('GS.diffEngine.compute()')">
+            Compute Diff (current snapshot)
+          </div>
+          <div class="command" onclick="executeCommand('GS.undoRedo.undo()')">
+            Undo
+          </div>
+          <div class="command" onclick="executeCommand('GS.undoRedo.redo()')">
+            Redo
+          </div>
+          <div class="command multiline" onclick="executeCommand(`// Create a diff between two versions
+const vs = GS.versioning.getVersions(); if(vs && vs.length>1) GS.diffEngine.diff(vs[0].id, vs[1].id); else console.log('Need 2 versions')`)">
+            Diff Between Versions
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Annotations</h3>
+          <div class="command multiline" onclick="executeCommand(`GS.annotation.addNote('repo-1', 'This is a note from UI')`)">
+            Add Note to repo-1
+          </div>
+          <div class="command" onclick="executeCommand(`GS.annotation.addTag('repo-1','important')`)">
+            Add Tag 'important'
+          </div>
+          <div class="command" onclick="executeCommand(`GS.annotation.setFlag('repo-1','reviewed',true)`)">
+            Set Flag 'reviewed' = true
+          </div>
+          <div class="command" onclick="executeCommand(`GS.annotation.getAnnotations('repo-1')`)">
+            List Annotations for repo-1
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h3>Cassettes</h3>
+          <div class="command multiline" onclick="executeCommand(`// Record simple cassette
+GS.cassette.startRecording('Demo'); GS.cassette.recordFrame('repo-1','highlight',300); GS.cassette.stopRecording();`)">
+            Record Demo Cassette
+          </div>
+          <div class="command" onclick="executeCommand(`const c = GS.cassette.getCassettes()[0]; if(c) GS.cassette.play(c.id); else console.log('No cassette')`)">
+            Play First Cassette
+          </div>
+          <div class="command" onclick="executeCommand('GS.cassette.pause()')">Pause Cassette</div>
+          <div class="command" onclick="executeCommand('GS.cassette.resume()')">Resume Cassette</div>
+        </div>
+
+        <div class="command-section">
+          <h3>Highlighting</h3>
+          <div class="command" onclick="executeCommand(`GS.highlight.highlight('repo-1','hover')`)">
+            Highlight repo-1 (hover)
+          </div>
+          <div class="command" onclick="executeCommand(`GS.highlight.highlight('repo-1','select')`)">
+            Select repo-1
+          </div>
+          <div class="command" onclick="executeCommand(`GS.highlight.unhighlight('repo-1')`)">
+            Unhighlight repo-1
+          </div>
+          <div class="command" onclick="executeCommand('GS.highlight.getHighlighted()')">List Highlighted</div>
+        </div>
 
         <div class="command-section">
           <h3>Development</h3>
           <div class="command" onclick="clearConsole()">
             Clear Console
-          </div>
-          <div class="command" onclick="toggleSidebar()">
-            Toggle Sidebar
           </div>
         </div>
       </div>

@@ -21,13 +21,13 @@ Phase 1: Core Foundations
 Phase 2: Graph Operations
 ├── QueryEngine ✅ (Done)
 ├── Versioning & Snapshots ✅ (Done)
-├── DiffEngine
-└── UndoRedo Manager
+├── DiffEngine ✅ (Done)
+└── UndoRedo Manager ✅ (Done)
 
 Phase 3: Services Layer
-├── AnnotationService
-├── CassettePlayer
-└── HighlightController
+├── AnnotationService ✅ (Done)
+├── CassettePlayer ✅ (Done)
+└── HighlightController ✅ (Done)
 
 Phase 4: Data Adapters
 ├── Storage Adapters (LocalStorage, IndexedDB)
