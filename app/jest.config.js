@@ -1,5 +1,5 @@
 export default {
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   roots: ['<rootDir>/test'],
   testMatch: ['**/*.test.js'],
   setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
@@ -20,7 +20,7 @@ export default {
   testTimeout: 10000,
   transform: {},
   // ESM support for Jest 29+
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   transformIgnorePatterns: [],
   moduleNameMapper: {}
 };

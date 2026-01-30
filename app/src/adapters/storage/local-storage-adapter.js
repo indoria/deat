@@ -47,6 +47,9 @@ class LocalStorageAdapter extends EventEmitter {
       const json = JSON.stringify(entry);
 
       try {
+        // Debug: ensure the overridden setItem is visible during tests
+        console.log('[LocalStorageAdapter] setItem is', typeof localStorage.setItem);
+        console.log('[LocalStorageAdapter] storing key', storageKey);
         localStorage.setItem(storageKey, json);
       } catch (error) {
         // Handle quota exceeded

@@ -4,6 +4,8 @@
  * See: ../../doc/TESTING.md
  */
 
+import { jest, beforeEach } from '@jest/globals';
+
 // Create a mock implementation of localStorage
 class LocalStorageMock {
   constructor() {
