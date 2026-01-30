@@ -21,7 +21,7 @@ Phase 1: Core Foundations
 Phase 2: Graph Operations
 ├── QueryEngine ✅ (Done)
 ├── Versioning & Snapshots ✅ (Done)
-├── DiffEngine
+├── DiffEngine ✅ (Done)
 └── UndoRedo Manager
 
 Phase 3: Services Layer
